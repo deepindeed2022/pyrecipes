@@ -2,12 +2,19 @@
 #!-*-encoding=utf8-*-
 import os
 import os.path
+import subprocess
+from pprint import pprint
 
+def reset_sdk_head(sdk, branch="master"):
+	p = subprocess.Popen('cd {} && git reset --hard HEAD~ && git checkout {branch} && git pull'.foramt(sdk, branch), 
+				shell=True, stdout=subprocess.PIPE)
+	pipe = p.stdout.readlines()
+	print pipe
 
 def print_format(interface_set):
 	pass
 
-def get_project_interface(project, func_prefix, is_reverse=False):
+def get_project_interface(project, func_prefix, branch="master", is_reverse=False):
 	def get_subfiles(srcdir = None):
 		filelist= []
 		def process_dir(arg, dirname, names):
@@ -26,7 +33,7 @@ def get_project_interface(project, func_prefix, is_reverse=False):
 			for sdir in srcdir:
 				os.path.walk(sdir, process_dir, "")
 			return filelist
-
+	reset_sdk_head(project, branch)
 	header_files = filter(lambda x: x.endswith(".h"), get_subfiles("{}/include".format(project)))
 	# print header_files
 	interface_set = []
@@ -56,10 +63,10 @@ func_prefix = "cv_common_"
 
 sdk_projects = "sdk_common,sdk_face,sdk_segment,sdk_classify,sdk_liveness,sdk_dewatermark,sdk_detect,sdk_hand".split(",")
 
-proj_interface_map = dict()
-for proj in sdk_projects:
-	print("parsing {} ...".format(proj))
-	proj_interface_map[proj] = get_project_interface(proj, func_prefix)
+# proj_interface_map = dict()
+# for proj in sdk_projects:
+# 	print("parsing {} ...".format(proj))
+# 	proj_interface_map[proj] = get_project_interface(proj, func_prefix)
 
 # for k,v in proj_interface_map.items():
 # 	print k, v
@@ -68,8 +75,11 @@ def howrefactor_project_interface(proj1, branch1, proj2, branch2):
 	# TODO:
 	# proj1 checkout branch1, proj2 checkout branch2
 
-	proj1_interface = set(get_project_interface(proj1, func_prefix))
-	proj2_interface = set(get_project_interface(proj2, func_prefix))
+	proj1_interface = set(get_project_interface(proj1, func_prefix, branch1))
+	proj2_interface = set(get_project_interface(proj2, func_prefix, branch2))
 	union_set = proj1_interface | proj2_interface
 	intersection = proj1_interface & proj2_interface
 	return union_set, intersection
+
+
+howrefactor_project_interface("sdk_common","master", "sdk_common","split_common")

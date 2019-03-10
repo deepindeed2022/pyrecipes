@@ -21,6 +21,7 @@
 * [decorate](./grammer/decorate.py)
 
 4. [input data](./grammer/input_value.py)
+5. [继承初始化](./grammer/inheriency.py)
 
 ## 常用的python demo
 
@@ -82,6 +83,8 @@ data :
 +- first : 1
 +- before : 1
 ```
+
+4. [多线程，进程，协程](thread)
 
 ## python实现的算法类
 1. 信息论
